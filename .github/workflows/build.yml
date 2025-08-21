@@ -1,18 +1,32 @@
-name: Build and Release dist
+name: Build and Deploy
+
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main   # ou "principal" dependendo do nome do seu branch
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Clonar código
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: 18
-      - run: npm install
-      - run: npm run build
-      - uses: actions/upload-artifact@v3
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Build do projeto
+        run: npm run build
+
+      - name: Deploy no GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          name: dist
-          path: dist
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+
